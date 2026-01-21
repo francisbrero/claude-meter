@@ -7,7 +7,8 @@ import SwiftUI
 
 struct MenuBarView: View {
     @EnvironmentObject var usageManager: UsageManager
-    
+    @StateObject private var launchAtLogin = LaunchAtLogin()
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
@@ -16,7 +17,7 @@ struct MenuBarView: View {
                     .font(.headline)
                 Spacer()
                 Button(action: { usageManager.refresh() }) {
-                    Image(systemName: usageManager.isLoading ? "arrow.clockwise" : "arrow.clockwise")
+                    Image(systemName: "arrow.clockwise")
                         .rotationEffect(.degrees(usageManager.isLoading ? 360 : 0))
                         .animation(usageManager.isLoading ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: usageManager.isLoading)
                 }
@@ -24,9 +25,9 @@ struct MenuBarView: View {
                 .disabled(usageManager.isLoading)
             }
             .padding(.bottom, 4)
-            
+
             Divider()
-            
+
             if usageManager.isLoading && usageManager.sessionUsage == nil {
                 HStack {
                     ProgressView()
@@ -48,7 +49,7 @@ struct MenuBarView: View {
                         resetLabel: "Resets"
                     )
                 }
-                
+
                 // Weekly Usage (7-day)
                 if let weekly = usageManager.weeklyUsage {
                     UsageRow(
@@ -57,7 +58,7 @@ struct MenuBarView: View {
                         resetLabel: "Resets"
                     )
                 }
-                
+
                 // Sonnet Usage (optional)
                 if let sonnet = usageManager.sonnetUsage {
                     UsageRow(
@@ -66,7 +67,7 @@ struct MenuBarView: View {
                         resetLabel: "Resets"
                     )
                 }
-                
+
                 // Last updated
                 if let lastUpdated = usageManager.lastUpdated {
                     HStack {
@@ -80,9 +81,16 @@ struct MenuBarView: View {
                     .padding(.top, 4)
                 }
             }
-            
+
             Divider()
-            
+
+            // Settings
+            Toggle("Launch at Login", isOn: $launchAtLogin.isEnabled)
+                .toggleStyle(.checkbox)
+                .font(.caption)
+
+            Divider()
+
             // Footer buttons
             Button("Quit") {
                 NSApplication.shared.terminate(nil)
@@ -98,7 +106,7 @@ struct UsageRow: View {
     let title: String
     let usage: UsageData
     let resetLabel: String
-    
+
     var statusColor: Color {
         switch usage.percentage {
         case ..<70: return .green
@@ -106,7 +114,7 @@ struct UsageRow: View {
         default: return .red
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
@@ -119,7 +127,7 @@ struct UsageRow: View {
                     .fontWeight(.semibold)
                     .foregroundColor(statusColor)
             }
-            
+
             // Progress bar
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
@@ -131,7 +139,7 @@ struct UsageRow: View {
                 }
             }
             .frame(height: 8)
-            
+
             // Reset time
             if let resetTime = usage.resetTime {
                 Text("\(resetLabel) \(formatTimeRemaining(resetTime))")
@@ -141,14 +149,14 @@ struct UsageRow: View {
         }
         .padding(.vertical, 4)
     }
-    
+
     private func formatTimeRemaining(_ date: Date) -> String {
         let remaining = date.timeIntervalSinceNow
         if remaining <= 0 { return "now" }
-        
+
         let hours = Int(remaining) / 3600
         let minutes = (Int(remaining) % 3600) / 60
-        
+
         if hours > 24 {
             let days = hours / 24
             return "in \(days)d \(hours % 24)h"
@@ -162,7 +170,7 @@ struct UsageRow: View {
 
 struct ErrorView: View {
     let message: String
-    
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle")
