@@ -16,7 +16,9 @@ struct MenuBarView: View {
                     .font(.headline)
                 Spacer()
                 Button(action: { usageManager.refresh() }) {
-                    Image(systemName: "arrow.clockwise")
+                    Image(systemName: usageManager.isLoading ? "arrow.clockwise" : "arrow.clockwise")
+                        .rotationEffect(.degrees(usageManager.isLoading ? 360 : 0))
+                        .animation(usageManager.isLoading ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: usageManager.isLoading)
                 }
                 .buttonStyle(.plain)
                 .disabled(usageManager.isLoading)
@@ -26,48 +28,66 @@ struct MenuBarView: View {
             Divider()
             
             if usageManager.isLoading && usageManager.sessionUsage == nil {
-                ProgressView("Loading...")
-                    .frame(maxWidth: .infinity)
-                    .padding()
+                HStack {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text("Loading...")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
             } else if let error = usageManager.error {
                 ErrorView(message: error)
             } else {
-                // Session Usage
+                // Session Usage (5-hour)
                 if let session = usageManager.sessionUsage {
                     UsageRow(
-                        title: "Session",
+                        title: "Session (5h)",
                         usage: session,
-                        resetLabel: "Resets in"
+                        resetLabel: "Resets"
                     )
                 }
                 
-                // Weekly Usage
+                // Weekly Usage (7-day)
                 if let weekly = usageManager.weeklyUsage {
                     UsageRow(
-                        title: "Weekly",
+                        title: "Weekly (7d)",
                         usage: weekly,
-                        resetLabel: "Resets in"
+                        resetLabel: "Resets"
+                    )
+                }
+                
+                // Sonnet Usage (optional)
+                if let sonnet = usageManager.sonnetUsage {
+                    UsageRow(
+                        title: "Sonnet",
+                        usage: sonnet,
+                        resetLabel: "Resets"
                     )
                 }
                 
                 // Last updated
                 if let lastUpdated = usageManager.lastUpdated {
-                    Text("Updated \(lastUpdated, style: .relative) ago")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                        .padding(.top, 4)
+                    HStack {
+                        Circle()
+                            .fill(usageManager.statusColor)
+                            .frame(width: 8, height: 8)
+                        Text("Updated \(lastUpdated, style: .relative) ago")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.top, 4)
                 }
             }
             
             Divider()
             
             // Footer buttons
-            HStack {
-                Button("Quit") {
-                    NSApplication.shared.terminate(nil)
-                }
-                .keyboardShortcut("q")
+            Button("Quit") {
+                NSApplication.shared.terminate(nil)
             }
+            .keyboardShortcut("q")
         }
         .padding()
         .frame(width: 280)
@@ -95,7 +115,7 @@ struct UsageRow: View {
                     .fontWeight(.medium)
                 Spacer()
                 Text("\(Int(usage.percentage))%")
-                    .font(.subheadline)
+                    .font(.system(.subheadline, design: .rounded))
                     .fontWeight(.semibold)
                     .foregroundColor(statusColor)
             }
@@ -107,33 +127,19 @@ struct UsageRow: View {
                         .fill(Color.secondary.opacity(0.2))
                     RoundedRectangle(cornerRadius: 4)
                         .fill(statusColor)
-                        .frame(width: geometry.size.width * min(usage.percentage / 100, 1.0))
+                        .frame(width: geometry.size.width * min(CGFloat(usage.percentage) / 100, 1.0))
                 }
             }
             .frame(height: 8)
             
-            HStack {
-                Text("\(formatNumber(usage.used)) / \(formatNumber(usage.limit))")
+            // Reset time
+            if let resetTime = usage.resetTime {
+                Text("\(resetLabel) \(formatTimeRemaining(resetTime))")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                Spacer()
-                if let resetTime = usage.resetTime {
-                    Text("\(resetLabel) \(formatTimeRemaining(resetTime))")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
             }
         }
         .padding(.vertical, 4)
-    }
-    
-    private func formatNumber(_ num: Int) -> String {
-        if num >= 1_000_000 {
-            return String(format: "%.1fM", Double(num) / 1_000_000)
-        } else if num >= 1_000 {
-            return String(format: "%.1fK", Double(num) / 1_000)
-        }
-        return "\(num)"
     }
     
     private func formatTimeRemaining(_ date: Date) -> String {
@@ -145,11 +151,11 @@ struct UsageRow: View {
         
         if hours > 24 {
             let days = hours / 24
-            return "\(days)d \(hours % 24)h"
+            return "in \(days)d \(hours % 24)h"
         } else if hours > 0 {
-            return "\(hours)h \(minutes)m"
+            return "in \(hours)h \(minutes)m"
         } else {
-            return "\(minutes)m"
+            return "in \(minutes)m"
         }
     }
 }
@@ -160,12 +166,13 @@ struct ErrorView: View {
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
+                .font(.title)
                 .foregroundColor(.yellow)
             Text(message)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .padding()

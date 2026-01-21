@@ -7,44 +7,25 @@ import Foundation
 import Security
 
 class KeychainService {
-    // Claude Code stores OAuth tokens in the keychain
-    // The service name may vary - this attempts common patterns
-    private let possibleServices = [
-        "claude-code",
-        "anthropic-claude-code",
-        "com.anthropic.claude-code"
-    ]
-    
-    private let possibleAccounts = [
-        "oauth-token",
-        "access-token",
-        "default"
-    ]
+    // Claude Code stores credentials with this service name
+    private let serviceName = "Claude Code-credentials"
     
     func getAccessToken() -> String? {
-        // Try different service/account combinations
-        for service in possibleServices {
-            for account in possibleAccounts {
-                if let token = getKeychainItem(service: service, account: account) {
-                    return token
-                }
+        // Get the current macOS username for the account
+        let username = NSUserName()
+        
+        guard let jsonData = getKeychainItem(service: serviceName, account: username) else {
+            // Fallback: try without account specified
+            guard let fallbackData = getKeychainItem(service: serviceName, account: nil) else {
+                return nil
             }
-            
-            // Also try without specifying account
-            if let token = getKeychainItem(service: service, account: nil) {
-                return token
-            }
+            return parseAccessToken(from: fallbackData)
         }
         
-        // Try generic password search
-        if let token = searchGenericPassword() {
-            return token
-        }
-        
-        return nil
+        return parseAccessToken(from: jsonData)
     }
     
-    private func getKeychainItem(service: String, account: String?) -> String? {
+    private func getKeychainItem(service: String, account: String?) -> Data? {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -59,41 +40,25 @@ class KeychainService {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        guard status == errSecSuccess,
-              let data = result as? Data,
-              let token = String(data: data, encoding: .utf8) else {
+        guard status == errSecSuccess, let data = result as? Data else {
             return nil
         }
         
-        return token
+        return data
     }
     
-    private func searchGenericPassword() -> String? {
-        // Search for any keychain item containing "claude" or "anthropic"
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecReturnAttributes as String: true,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitAll
-        ]
-        
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        
-        guard status == errSecSuccess,
-              let items = result as? [[String: Any]] else {
-            return nil
-        }
-        
-        for item in items {
-            if let service = item[kSecAttrService as String] as? String,
-               (service.lowercased().contains("claude") || service.lowercased().contains("anthropic")),
-               let data = item[kSecValueData as String] as? Data,
-               let token = String(data: data, encoding: .utf8) {
-                return token
+    private func parseAccessToken(from data: Data) -> String? {
+        // The keychain stores JSON: {"claudeAiOauth":{"accessToken":"...","refreshToken":"..."}}
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let claudeAiOauth = json["claudeAiOauth"] as? [String: Any],
+                  let accessToken = claudeAiOauth["accessToken"] as? String else {
+                return nil
             }
+            return accessToken
+        } catch {
+            // Maybe it's stored as plain text token
+            return String(data: data, encoding: .utf8)
         }
-        
-        return nil
     }
 }

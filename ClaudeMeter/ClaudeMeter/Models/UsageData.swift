@@ -6,50 +6,73 @@
 import Foundation
 
 struct UsageData {
-    let used: Int
-    let limit: Int
+    let utilization: Double  // Percentage (0-100)
     let resetTime: Date?
     
-    var percentage: Double {
-        guard limit > 0 else { return 0 }
-        return (Double(used) / Double(limit)) * 100
-    }
+    var percentage: Double { utilization }
     
-    var remaining: Int {
-        return max(0, limit - used)
+    var remaining: Double {
+        return max(0, 100 - utilization)
     }
 }
 
-struct UsageResponse: Codable {
-    let sessionUsage: SessionUsage?
-    let weeklyUsage: WeeklyUsage?
+// MARK: - API Response Models
+
+struct UsageResponse {
+    let sessionUsage: SessionUsage?   // 5-hour rolling window
+    let weeklyUsage: WeeklyUsage?     // 7-day rolling window
+    let sonnetUsage: SonnetUsage?     // Sonnet-specific limit (optional)
+}
+
+struct SessionUsage {
+    let utilization: Double  // Percentage used
+    let resetsAt: String?    // ISO8601 date string
     
-    enum CodingKeys: String, CodingKey {
-        case sessionUsage = "session_usage"
-        case weeklyUsage = "weekly_usage"
+    func toUsageData() -> UsageData {
+        UsageData(
+            utilization: utilization,
+            resetTime: parseDate(resetsAt)
+        )
     }
 }
 
-struct SessionUsage: Codable {
-    let used: Int
-    let limit: Int
+struct WeeklyUsage {
+    let utilization: Double
     let resetsAt: String?
     
-    enum CodingKeys: String, CodingKey {
-        case used
-        case limit
-        case resetsAt = "resets_at"
+    func toUsageData() -> UsageData {
+        UsageData(
+            utilization: utilization,
+            resetTime: parseDate(resetsAt)
+        )
     }
 }
 
-struct WeeklyUsage: Codable {
-    let used: Int
-    let limit: Int
+struct SonnetUsage {
+    let utilization: Double
     let resetsAt: String?
     
-    enum CodingKeys: String, CodingKey {
-        case used
-        case limit
-        case resetsAt = "resets_at"
+    func toUsageData() -> UsageData {
+        UsageData(
+            utilization: utilization,
+            resetTime: parseDate(resetsAt)
+        )
     }
+}
+
+// MARK: - Date Parsing
+
+private func parseDate(_ dateString: String?) -> Date? {
+    guard let dateString = dateString else { return nil }
+    
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+    
+    if let date = formatter.date(from: dateString) {
+        return date
+    }
+    
+    // Fallback without fractional seconds
+    formatter.formatOptions = [.withInternetDateTime]
+    return formatter.date(from: dateString)
 }

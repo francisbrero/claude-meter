@@ -84,6 +84,14 @@ Claude Meter reads your Claude Code OAuth credentials from macOS Keychain and qu
 ### "Not logged in to Claude Code"
 Run `claude` in Terminal and complete the login flow.
 
+### "Token missing required scope"
+Your OAuth token was created before the usage API scope existed. Fix:
+```bash
+claude logout
+claude
+```
+Then re-authenticate. The new token will have the required `user:profile` scope.
+
 ### App doesn't appear in menubar
 Check if the app is running in Activity Monitor. Try quitting and reopening.
 

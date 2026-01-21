@@ -11,6 +11,7 @@ import UserNotifications
 class UsageManager: ObservableObject {
     @Published var sessionUsage: UsageData?
     @Published var weeklyUsage: UsageData?
+    @Published var sonnetUsage: UsageData?
     @Published var isLoading = false
     @Published var error: String?
     @Published var lastUpdated: Date?
@@ -25,11 +26,26 @@ class UsageManager: ObservableObject {
     private let thresholds = [80, 90]
     
     var statusColor: Color {
-        guard let session = sessionUsage else { return .secondary }
-        switch session.percentage {
+        let maxUtil = max(
+            sessionUsage?.utilization ?? 0,
+            weeklyUsage?.utilization ?? 0
+        )
+        switch maxUtil {
         case ..<70: return .green
         case 70..<90: return .yellow
         default: return .red
+        }
+    }
+    
+    var statusEmoji: String {
+        let maxUtil = max(
+            sessionUsage?.utilization ?? 0,
+            weeklyUsage?.utilization ?? 0
+        )
+        switch maxUtil {
+        case ..<70: return "🟢"
+        case 70..<90: return "🟡"
+        default: return "🔴"
         }
     }
     
@@ -41,50 +57,49 @@ class UsageManager: ObservableObject {
     
     func refresh() {
         Task {
-            await fetchUsage()
+            await fetchUsageWithRetry(retriesRemaining: 3)
         }
     }
     
-    private func fetchUsage() async {
+    private func fetchUsageWithRetry(retriesRemaining: Int) async {
         isLoading = true
         error = nil
+        
+        defer { isLoading = false }
         
         do {
             let response = try await apiClient.fetchUsage()
             
             if let session = response.sessionUsage {
-                let resetTime = parseDate(session.resetsAt)
-                sessionUsage = UsageData(used: session.used, limit: session.limit, resetTime: resetTime)
-                checkThresholds(usage: sessionUsage!, type: "Session", notified: &notifiedSessionThresholds)
+                let newUsage = session.toUsageData()
+                sessionUsage = newUsage
+                checkThresholds(usage: newUsage, type: "Session", notified: &notifiedSessionThresholds)
             }
             
             if let weekly = response.weeklyUsage {
-                let resetTime = parseDate(weekly.resetsAt)
-                weeklyUsage = UsageData(used: weekly.used, limit: weekly.limit, resetTime: resetTime)
-                checkThresholds(usage: weeklyUsage!, type: "Weekly", notified: &notifiedWeeklyThresholds)
+                let newUsage = weekly.toUsageData()
+                weeklyUsage = newUsage
+                checkThresholds(usage: newUsage, type: "Weekly", notified: &notifiedWeeklyThresholds)
+            }
+            
+            if let sonnet = response.sonnetUsage {
+                sonnetUsage = sonnet.toUsageData()
             }
             
             lastUpdated = Date()
-        } catch APIError.notLoggedIn {
-            error = "Not logged in to Claude Code.\nRun 'claude' in Terminal to log in."
-        } catch APIError.networkError(let message) {
-            error = "Network error: \(message)"
+            
+        } catch let urlError as URLError where urlError.isRetryable && retriesRemaining > 0 {
+            // Retry on network errors (common after wake from sleep)
+            try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+            await fetchUsageWithRetry(retriesRemaining: retriesRemaining - 1)
+            
         } catch {
-            self.error = "Failed to fetch usage: \(error.localizedDescription)"
+            self.error = error.localizedDescription
         }
-        
-        isLoading = false
-    }
-    
-    private func parseDate(_ dateString: String?) -> Date? {
-        guard let dateString = dateString else { return nil }
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        return formatter.date(from: dateString) ?? ISO8601DateFormatter().date(from: dateString)
     }
     
     private func startRefreshTimer() {
-        // Refresh every 2 minutes
+        // Refresh every 2 minutes by default
         let interval = UserDefaults.standard.double(forKey: "refreshInterval")
         let refreshInterval = interval > 0 ? interval : 120
         
@@ -108,9 +123,29 @@ class UsageManager: ObservableObject {
             }
         }
         
-        // Reset notifications if usage drops below thresholds
-        if usage.percentage < 80 {
+        // Reset notifications if usage drops below lowest threshold
+        if usage.percentage < Double(thresholds.min() ?? 80) {
             notified.removeAll()
+        }
+    }
+}
+
+// MARK: - URLError Extension
+
+extension URLError {
+    /// Network errors that may resolve after wake from sleep
+    var isRetryable: Bool {
+        switch self.code {
+        case .notConnectedToInternet,
+             .networkConnectionLost,
+             .dnsLookupFailed,
+             .cannotFindHost,
+             .cannotConnectToHost,
+             .timedOut,
+             .secureConnectionFailed:
+            return true
+        default:
+            return false
         }
     }
 }
