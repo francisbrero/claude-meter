@@ -6,6 +6,9 @@ A lightweight macOS menu bar app that displays your personal Claude Code usage l
 ![Swift](https://img.shields.io/badge/Swift-5.9+-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+<img width="301" height="343" alt="image" src="https://github.com/user-attachments/assets/6088e9db-74e1-46cd-9522-24e4bf8b058a" />
+
+
 ## Features
 
 ### v1.0 (MVP)
