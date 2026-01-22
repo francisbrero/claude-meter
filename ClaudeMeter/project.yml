@@ -1,0 +1,34 @@
+name: ClaudeMeter
+options:
+  bundleIdPrefix: com.francisbrero
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+
+targets:
+  ClaudeMeter:
+    type: application
+    platform: macOS
+    sources:
+      - path: ClaudeMeter
+        excludes:
+          - "**/.DS_Store"
+    info:
+      path: ClaudeMeter/Info.plist
+    entitlements:
+      path: ClaudeMeter/ClaudeMeter.entitlements
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.francisbrero.ClaudeMeter
+        INFOPLIST_FILE: ClaudeMeter/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ClaudeMeter/ClaudeMeter.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES

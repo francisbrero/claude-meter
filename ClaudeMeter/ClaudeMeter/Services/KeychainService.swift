@@ -4,61 +4,63 @@
 //
 
 import Foundation
-import Security
 
 class KeychainService {
-    // Claude Code stores credentials with this service name
-    private let serviceName = "Claude Code-credentials"
-    
+
+    /// Get token from Claude Code's keychain using security CLI (avoids ACL prompt)
     func getAccessToken() -> String? {
-        // Get the current macOS username for the account
-        let username = NSUserName()
-        
-        guard let jsonData = getKeychainItem(service: serviceName, account: username) else {
-            // Fallback: try without account specified
-            guard let fallbackData = getKeychainItem(service: serviceName, account: nil) else {
-                return nil
-            }
-            return parseAccessToken(from: fallbackData)
+        // Try primary keychain entry
+        if let token = getTokenFromKeychain(service: "Claude Code-credentials") {
+            return token
         }
-        
-        return parseAccessToken(from: jsonData)
+
+        // Try alternate keychain entry
+        if let token = getTokenFromKeychain(service: "Claude Code") {
+            return token
+        }
+
+        return nil
     }
-    
-    private func getKeychainItem(service: String, account: String?) -> Data? {
-        var query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne
-        ]
-        
-        if let account = account {
-            query[kSecAttrAccount as String] = account
-        }
-        
-        var result: AnyObject?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        
-        guard status == errSecSuccess, let data = result as? Data else {
+
+    private func getTokenFromKeychain(service: String) -> String? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/security")
+        process.arguments = ["find-generic-password", "-s", service, "-w"]
+
+        let pipe = Pipe()
+        let errorPipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = errorPipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+        } catch {
             return nil
         }
-        
-        return data
-    }
-    
-    private func parseAccessToken(from data: Data) -> String? {
-        // The keychain stores JSON: {"claudeAiOauth":{"accessToken":"...","refreshToken":"..."}}
-        do {
-            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-                  let claudeAiOauth = json["claudeAiOauth"] as? [String: Any],
-                  let accessToken = claudeAiOauth["accessToken"] as? String else {
-                return nil
-            }
-            return accessToken
-        } catch {
-            // Maybe it's stored as plain text token
-            return String(data: data, encoding: .utf8)
+
+        guard process.terminationStatus == 0 else {
+            return nil
         }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let jsonString = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !jsonString.isEmpty else {
+            return nil
+        }
+
+        // Parse as JSON to get OAuth token
+        guard let jsonData = jsonString.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any] else {
+            return nil
+        }
+
+        // Check for claudeAiOauth structure
+        if let oauth = json["claudeAiOauth"] as? [String: Any],
+           let accessToken = oauth["accessToken"] as? String {
+            return accessToken
+        }
+
+        return nil
     }
 }
