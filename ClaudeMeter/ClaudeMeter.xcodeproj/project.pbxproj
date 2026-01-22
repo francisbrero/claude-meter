@@ -10,6 +10,7 @@
 		1E0C76B5C2098AADC0F2F6C6 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379C2139BE569AD5A4688BD8 /* MenuBarView.swift */; };
 		4EEE3065DC4E58BA85856E82 /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E56D6D5345AC8992823A9 /* LaunchAtLogin.swift */; };
 		89E237AF98BF5DE694F950FC /* ClaudeMeterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48181134F280608665A6EE78 /* ClaudeMeterApp.swift */; };
+		A18C0C8DA6E3291CE25E5C44 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56104AF94F812F494F711A65 /* Assets.xcassets */; };
 		B497877445ECA08C123934BB /* UsageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BEB25741A41D31C8D8F2E8D /* UsageManager.swift */; };
 		CAAEC7176A46F5828BE74FFE /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62D098E34DA9FCB0CE6F13D2 /* KeychainService.swift */; };
 		D7537A09F5B3C86E955C5FBC /* AnthropicAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4093ED2A8CCE0860E047E11C /* AnthropicAPIClient.swift */; };
@@ -24,6 +25,7 @@
 		379C2139BE569AD5A4688BD8 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		4093ED2A8CCE0860E047E11C /* AnthropicAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicAPIClient.swift; sourceTree = "<group>"; };
 		48181134F280608665A6EE78 /* ClaudeMeterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeMeterApp.swift; sourceTree = "<group>"; };
+		56104AF94F812F494F711A65 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		62D098E34DA9FCB0CE6F13D2 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		6C9490E456192838C4B1CD6F /* ClaudeMeter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMeter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BFED2E9A70A1756048EDF2A /* ClaudeMeter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClaudeMeter.entitlements; sourceTree = "<group>"; };
@@ -35,6 +37,7 @@
 		1D312F776D8A985FEFD43C1F /* ClaudeMeter */ = {
 			isa = PBXGroup;
 			children = (
+				56104AF94F812F494F711A65 /* Assets.xcassets */,
 				7BFED2E9A70A1756048EDF2A /* ClaudeMeter.entitlements */,
 				48181134F280608665A6EE78 /* ClaudeMeterApp.swift */,
 				E780403D2E726AC1D4D1E979 /* Info.plist */,
@@ -97,6 +100,7 @@
 			buildConfigurationList = DC06EBEC9FE1CDEE4E36C305 /* Build configuration list for PBXNativeTarget "ClaudeMeter" */;
 			buildPhases = (
 				3DD1255A9DBD30BAB485CD8F /* Sources */,
+				E3ACD70A0C364BE15F235401 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -137,6 +141,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E3ACD70A0C364BE15F235401 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A18C0C8DA6E3291CE25E5C44 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3DD1255A9DBD30BAB485CD8F /* Sources */ = {
