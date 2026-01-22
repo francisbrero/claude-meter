@@ -32,12 +32,29 @@ A lightweight macOS menu bar app that displays your personal Claude Code usage l
 1. Go to [Releases](https://github.com/francisbrero/claude-meter/releases)
 2. Download `ClaudeMeter.zip`
 3. Unzip and drag `ClaudeMeter.app` to your Applications folder
-4. Open the app (you may need to right-click → Open the first time)
+4. **Right-click** the app and select **"Open"** (important - see below)
+
+### First Launch - Gatekeeper Warning
+
+Since the app is not signed with an Apple Developer certificate, macOS will show a warning. This is normal for open-source apps distributed outside the App Store.
+
+**To open the app:**
+1. **Right-click** (or Control-click) on `ClaudeMeter.app`
+2. Select **"Open"** from the context menu
+3. Click **"Open"** in the dialog that appears
+
+You only need to do this once. After that, the app will open normally.
+
+**If you see "App can't be opened" or accidentally double-clicked:**
+1. Go to **System Settings → Privacy & Security**
+2. Scroll down to find the ClaudeMeter message
+3. Click **"Open Anyway"**
 
 ### Build from Source
 ```bash
 git clone https://github.com/francisbrero/claude-meter.git
-cd claude-meter
+cd claude-meter/ClaudeMeter
+xcodegen generate  # requires XcodeGen: brew install xcodegen
 open ClaudeMeter.xcodeproj
 ```
 Then build with ⌘B and run with ⌘R.
@@ -95,8 +112,11 @@ claude
 ```
 Then re-authenticate. The new token will have the required `user:profile` scope.
 
+### "App can't be opened" / Gatekeeper warning
+See the [Installation section](#first-launch---gatekeeper-warning) above. You need to right-click → Open the first time.
+
 ### App doesn't appear in menubar
-Check if the app is running in Activity Monitor. Try quitting and reopening.
+The icon might be hidden behind the notch on newer MacBooks. Try holding ⌘ (Command) and dragging in the menu bar to rearrange icons. Also check if the app is running in Activity Monitor.
 
 ### Usage shows wrong values
 Click the refresh button (↻) in the dropdown. If still wrong, your Claude Code session may have expired — run `claude` again.
