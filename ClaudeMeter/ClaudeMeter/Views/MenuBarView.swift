@@ -18,11 +18,10 @@ struct MenuBarView: View {
                 Spacer()
                 Button(action: { usageManager.refresh() }) {
                     Image(systemName: "arrow.clockwise")
-                        .rotationEffect(.degrees(usageManager.isLoading ? 360 : 0))
-                        .animation(usageManager.isLoading ? .linear(duration: 1).repeatForever(autoreverses: false) : .default, value: usageManager.isLoading)
                 }
                 .buttonStyle(.plain)
                 .disabled(usageManager.isLoading)
+                .opacity(usageManager.isLoading ? 0.5 : 1.0)
             }
             .padding(.bottom, 4)
 
