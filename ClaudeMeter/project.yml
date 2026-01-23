@@ -1,4 +1,4 @@
-name: ClaudeMeter
+name: AIMeter
 options:
   bundleIdPrefix: com.francisbrero
   deploymentTarget:
@@ -8,11 +8,11 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5"
-    MARKETING_VERSION: "1.0"
+    MARKETING_VERSION: "2.0"
     CURRENT_PROJECT_VERSION: "1"
 
 targets:
-  ClaudeMeter:
+  AIMeter:
     type: application
     platform: macOS
     sources:
@@ -22,13 +22,14 @@ targets:
     info:
       path: ClaudeMeter/Info.plist
     entitlements:
-      path: ClaudeMeter/ClaudeMeter.entitlements
+      path: ClaudeMeter/AIMeter.entitlements
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.francisbrero.ClaudeMeter
+        PRODUCT_BUNDLE_IDENTIFIER: com.francisbrero.AIMeter
         INFOPLIST_FILE: ClaudeMeter/Info.plist
-        CODE_SIGN_ENTITLEMENTS: ClaudeMeter/ClaudeMeter.entitlements
+        CODE_SIGN_ENTITLEMENTS: ClaudeMeter/AIMeter.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         COMBINE_HIDPI_IMAGES: YES
         CODE_SIGN_STYLE: Automatic
         ENABLE_HARDENED_RUNTIME: YES
+        PRODUCT_NAME: AI Meter

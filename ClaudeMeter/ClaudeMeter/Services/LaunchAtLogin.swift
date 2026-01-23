@@ -1,6 +1,6 @@
 //
 //  LaunchAtLogin.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import Foundation
