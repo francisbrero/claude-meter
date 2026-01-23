@@ -1,6 +1,6 @@
 //
 //  AnthropicAPIClient.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import Foundation
@@ -56,7 +56,7 @@ class AnthropicAPIClient {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("ClaudeMeter/1.0", forHTTPHeaderField: "User-Agent")
+        request.setValue("AIMeter/1.0", forHTTPHeaderField: "User-Agent")
         // Required beta header to enable OAuth usage endpoint
         request.setValue("oauth-2025-04-20", forHTTPHeaderField: "anthropic-beta")
 

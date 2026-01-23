@@ -1,6 +1,6 @@
 //
 //  MenuBarView.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import SwiftUI
@@ -8,26 +8,34 @@ import SwiftUI
 struct MenuBarView: View {
     @EnvironmentObject var usageManager: UsageManager
     @StateObject private var launchAtLogin = LaunchAtLogin()
+    @AppStorage("menuBarDisplayMode") private var displayMode = "weekly"
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
-                Text("Claude Meter")
+                Text("AI Meter")
                     .font(.headline)
                 Spacer()
                 Button(action: { usageManager.refresh() }) {
                     Image(systemName: "arrow.clockwise")
+                        .rotationEffect(.degrees(usageManager.isLoading ? 360 : 0))
+                        .animation(
+                            usageManager.isLoading
+                                ? .linear(duration: 1).repeatForever(autoreverses: false)
+                                : .default,
+                            value: usageManager.isLoading
+                        )
                 }
                 .buttonStyle(.plain)
                 .disabled(usageManager.isLoading)
-                .opacity(usageManager.isLoading ? 0.5 : 1.0)
+                .opacity(usageManager.isLoading ? 0.7 : 1.0)
             }
             .padding(.bottom, 4)
 
             Divider()
 
-            if usageManager.isLoading && usageManager.sessionUsage == nil {
+            if usageManager.isLoading && usageManager.providerStates.values.allSatisfy({ $0.usage == nil }) {
                 HStack {
                     ProgressView()
                         .scaleEffect(0.8)
@@ -37,34 +45,17 @@ struct MenuBarView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-            } else if let error = usageManager.error {
-                ErrorView(message: error)
             } else {
-                // Session Usage (5-hour)
-                if let session = usageManager.sessionUsage {
-                    UsageRow(
-                        title: "Session (5h)",
-                        usage: session,
-                        resetLabel: "Resets"
-                    )
+                // Provider Sections
+                ForEach(usageManager.availableProviders, id: \.id) { provider in
+                    if let state = usageManager.providerStates[provider.id] {
+                        ProviderSection(provider: provider, state: state)
+                    }
                 }
 
-                // Weekly Usage (7-day)
-                if let weekly = usageManager.weeklyUsage {
-                    UsageRow(
-                        title: "Weekly (7d)",
-                        usage: weekly,
-                        resetLabel: "Resets"
-                    )
-                }
-
-                // Sonnet Usage (optional)
-                if let sonnet = usageManager.sonnetUsage {
-                    UsageRow(
-                        title: "Sonnet",
-                        usage: sonnet,
-                        resetLabel: "Resets"
-                    )
+                // Show error if no providers available
+                if usageManager.availableProviders.isEmpty {
+                    ErrorView(message: "No providers configured.\nRun 'claude' or 'codex' in Terminal to log in.")
                 }
 
                 // Last updated
@@ -84,6 +75,18 @@ struct MenuBarView: View {
             Divider()
 
             // Settings
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Menu Bar Display")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Picker("", selection: $displayMode) {
+                    Text("Weekly").tag("weekly")
+                    Text("5 Hour").tag("session")
+                }
+                .pickerStyle(.segmented)
+                .labelsHidden()
+            }
+
             Toggle("Launch at Login", isOn: $launchAtLogin.isEnabled)
                 .toggleStyle(.checkbox)
                 .font(.caption)
@@ -97,17 +100,73 @@ struct MenuBarView: View {
             .keyboardShortcut("q")
         }
         .padding()
-        .frame(width: 280)
+        .frame(width: 300)
     }
 }
 
+// MARK: - Provider Section
+
+struct ProviderSection: View {
+    let provider: any UsageProvider
+    let state: ProviderState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Provider Header
+            HStack(spacing: 6) {
+                if let iconName = provider.iconName {
+                    Image(iconName)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 16, height: 16)
+                } else {
+                    Text(provider.icon)
+                        .font(.system(size: 14))
+                }
+                Text(provider.name.uppercased())
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundColor(.secondary)
+                Spacer()
+                if state.isLoading {
+                    ProgressView()
+                        .scaleEffect(0.5)
+                }
+            }
+
+            if let error = state.error {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundColor(.red)
+                    .padding(.vertical, 2)
+            } else if let usage = state.usage {
+                ForEach(usage.limits, id: \.name) { limit in
+                    UsageRow(
+                        title: limit.name,
+                        utilization: limit.utilization,
+                        resetTime: limit.resetTime,
+                        accentColor: provider.accentColor
+                    )
+                }
+            } else {
+                Text("Loading...")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Usage Row
+
 struct UsageRow: View {
     let title: String
-    let usage: UsageData
-    let resetLabel: String
+    let utilization: Double
+    let resetTime: Date?
+    var accentColor: Color = .blue
 
     var statusColor: Color {
-        switch usage.percentage {
+        switch utilization {
         case ..<70: return .green
         case 70..<90: return .yellow
         default: return .red
@@ -115,15 +174,13 @@ struct UsageRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    .font(.system(size: 12))
                 Spacer()
-                Text("\(Int(usage.percentage))%")
-                    .font(.system(.subheadline, design: .rounded))
-                    .fontWeight(.semibold)
+                Text("\(Int(utilization))%")
+                    .font(.system(size: 12, weight: .semibold, design: .monospaced))
                     .foregroundColor(statusColor)
             }
 
@@ -131,22 +188,21 @@ struct UsageRow: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.secondary.opacity(0.2))
+                        .fill(Color.secondary.opacity(0.15))
                     RoundedRectangle(cornerRadius: 4)
                         .fill(statusColor)
-                        .frame(width: geometry.size.width * min(CGFloat(usage.percentage) / 100, 1.0))
+                        .frame(width: geometry.size.width * min(CGFloat(utilization) / 100, 1.0))
                 }
             }
-            .frame(height: 8)
+            .frame(height: 6)
 
             // Reset time
-            if let resetTime = usage.resetTime {
-                Text("\(resetLabel) \(formatTimeRemaining(resetTime))")
-                    .font(.caption)
+            if let resetTime = resetTime {
+                Text("Resets \(formatTimeRemaining(resetTime))")
+                    .font(.system(size: 10))
                     .foregroundColor(.secondary)
             }
         }
-        .padding(.vertical, 4)
     }
 
     private func formatTimeRemaining(_ date: Date) -> String {
@@ -166,6 +222,8 @@ struct UsageRow: View {
         }
     }
 }
+
+// MARK: - Error View
 
 struct ErrorView: View {
     let message: String

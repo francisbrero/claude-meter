@@ -1,6 +1,6 @@
 //
 //  KeychainService.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import Foundation

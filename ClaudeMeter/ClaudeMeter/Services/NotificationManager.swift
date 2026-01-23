@@ -1,6 +1,6 @@
 //
 //  NotificationManager.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import Foundation
