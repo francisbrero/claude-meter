@@ -69,6 +69,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .sink { [weak self] _ in self?.updateStatusItem() }
             .store(in: &cancellables)
 
+        usageManager.$weeklyUsage
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in self?.updateStatusItem() }
+            .store(in: &cancellables)
+
         usageManager.$error
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in self?.updateStatusItem() }
@@ -96,8 +101,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func updateStatusItem() {
         guard let button = statusItem?.button else { return }
 
-        if let usage = usageManager.sessionUsage {
-            let pct = Int(usage.percentage)
+        let sessionPct = usageManager.sessionUsage?.percentage ?? 0
+        let weeklyPct = usageManager.weeklyUsage?.percentage ?? 0
+        let maxPct = max(sessionPct, weeklyPct)
+
+        if usageManager.sessionUsage != nil || usageManager.weeklyUsage != nil {
+            let pct = Int(maxPct)
             let emoji: String
             if pct >= 90 { emoji = "🔴" }
             else if pct >= 70 { emoji = "🟡" }
