@@ -1,0 +1,380 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		163F8314B17B330F678A019D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6367467EED64CE9C669FF9AD /* Assets.xcassets */; };
+		25BE2679B139D960A818DA1A /* CodexCredentialService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 263DFCB77B7118DD24BDC77E /* CodexCredentialService.swift */; };
+		41C7BC567BBAFD046DD36E06 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD133636D8E0A91DF69A67A /* KeychainService.swift */; };
+		62669B97A2A31B91DDAC2D6F /* UsageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1652AA5B74C7ED338F39411D /* UsageManager.swift */; };
+		6AF6AF36ACC738558614A461 /* CodexProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9136055D8015279457DF47F3 /* CodexProvider.swift */; };
+		7CFE5486D908266205C461E3 /* UsageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 846393251434006BB05A3933 /* UsageProvider.swift */; };
+		82C5528B9D4205E678519753 /* UsageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58EC34CE28B3E13070487010 /* UsageData.swift */; };
+		97D5ABFE1259FBDD347D47FD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04E8077AD35F6D1E9ABADE6 /* NotificationManager.swift */; };
+		9880A4A56DCA83B1C645793A /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D9C98E73AE02957B82EB68 /* LaunchAtLogin.swift */; };
+		BF68FE6C3E923B372B736FE5 /* AIMeterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5902AA5070644DEAC26C3381 /* AIMeterApp.swift */; };
+		E2A323A2005A623E972CC64D /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46A9E371732EBF8F15C1C5A8 /* MenuBarView.swift */; };
+		EC4402ABFAC693CAEDE31BBD /* AnthropicAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38058BD5C5B785214309385B /* AnthropicAPIClient.swift */; };
+		FFCBAD138BD4C0FE933A05B2 /* ClaudeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561D84746AAA2883C06D3EB3 /* ClaudeProvider.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1652AA5B74C7ED338F39411D /* UsageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageManager.swift; sourceTree = "<group>"; };
+		1ADE64FA2470BA4C9E519EDA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		263DFCB77B7118DD24BDC77E /* CodexCredentialService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexCredentialService.swift; sourceTree = "<group>"; };
+		38058BD5C5B785214309385B /* AnthropicAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicAPIClient.swift; sourceTree = "<group>"; };
+		3810A81D088E820AD7CE8EB1 /* AIMeter.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AIMeter.entitlements; sourceTree = "<group>"; };
+		46A9E371732EBF8F15C1C5A8 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		4BD133636D8E0A91DF69A67A /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		561D84746AAA2883C06D3EB3 /* ClaudeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeProvider.swift; sourceTree = "<group>"; };
+		58EC34CE28B3E13070487010 /* UsageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageData.swift; sourceTree = "<group>"; };
+		5902AA5070644DEAC26C3381 /* AIMeterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIMeterApp.swift; sourceTree = "<group>"; };
+		6367467EED64CE9C669FF9AD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		846393251434006BB05A3933 /* UsageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageProvider.swift; sourceTree = "<group>"; };
+		9136055D8015279457DF47F3 /* CodexProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexProvider.swift; sourceTree = "<group>"; };
+		E0D9C98E73AE02957B82EB68 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
+		F04E8077AD35F6D1E9ABADE6 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		FE73A1851218DA4462AA95A8 /* AIMeter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AIMeter.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3A0C0389BBE9B479D7C39C5B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE73A1851218DA4462AA95A8 /* AIMeter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		62F018C607F63D5D8E6F3A8F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				58EC34CE28B3E13070487010 /* UsageData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		6BA9FA428F6CE28CCADE8B16 = {
+			isa = PBXGroup;
+			children = (
+				A266EA2CBB98938863C3DC51 /* ClaudeMeter */,
+				3A0C0389BBE9B479D7C39C5B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A266EA2CBB98938863C3DC51 /* ClaudeMeter */ = {
+			isa = PBXGroup;
+			children = (
+				3810A81D088E820AD7CE8EB1 /* AIMeter.entitlements */,
+				5902AA5070644DEAC26C3381 /* AIMeterApp.swift */,
+				6367467EED64CE9C669FF9AD /* Assets.xcassets */,
+				1ADE64FA2470BA4C9E519EDA /* Info.plist */,
+				62F018C607F63D5D8E6F3A8F /* Models */,
+				D6596C351D281F16F5CBCCF7 /* Services */,
+				BEBE4EB37F449777262A87DA /* Views */,
+			);
+			path = ClaudeMeter;
+			sourceTree = "<group>";
+		};
+		BEBE4EB37F449777262A87DA /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				46A9E371732EBF8F15C1C5A8 /* MenuBarView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D6596C351D281F16F5CBCCF7 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				38058BD5C5B785214309385B /* AnthropicAPIClient.swift */,
+				561D84746AAA2883C06D3EB3 /* ClaudeProvider.swift */,
+				263DFCB77B7118DD24BDC77E /* CodexCredentialService.swift */,
+				9136055D8015279457DF47F3 /* CodexProvider.swift */,
+				4BD133636D8E0A91DF69A67A /* KeychainService.swift */,
+				E0D9C98E73AE02957B82EB68 /* LaunchAtLogin.swift */,
+				F04E8077AD35F6D1E9ABADE6 /* NotificationManager.swift */,
+				1652AA5B74C7ED338F39411D /* UsageManager.swift */,
+				846393251434006BB05A3933 /* UsageProvider.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A92723C49AEADF802953D655 /* AIMeter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3AF1FF0CFC41DD3782D5B1 /* Build configuration list for PBXNativeTarget "AIMeter" */;
+			buildPhases = (
+				33E261B447AC368785292220 /* Sources */,
+				27B281B06E71B734FEA856DD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AIMeter;
+			packageProductDependencies = (
+			);
+			productName = AIMeter;
+			productReference = FE73A1851218DA4462AA95A8 /* AIMeter.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		352CF428D2FD5BDA474D3321 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A92723C49AEADF802953D655 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 6D9270003785FFBF5E6DA9CA /* Build configuration list for PBXProject "AIMeter" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 6BA9FA428F6CE28CCADE8B16;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A92723C49AEADF802953D655 /* AIMeter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		27B281B06E71B734FEA856DD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				163F8314B17B330F678A019D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		33E261B447AC368785292220 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BF68FE6C3E923B372B736FE5 /* AIMeterApp.swift in Sources */,
+				EC4402ABFAC693CAEDE31BBD /* AnthropicAPIClient.swift in Sources */,
+				FFCBAD138BD4C0FE933A05B2 /* ClaudeProvider.swift in Sources */,
+				25BE2679B139D960A818DA1A /* CodexCredentialService.swift in Sources */,
+				6AF6AF36ACC738558614A461 /* CodexProvider.swift in Sources */,
+				41C7BC567BBAFD046DD36E06 /* KeychainService.swift in Sources */,
+				9880A4A56DCA83B1C645793A /* LaunchAtLogin.swift in Sources */,
+				E2A323A2005A623E972CC64D /* MenuBarView.swift in Sources */,
+				97D5ABFE1259FBDD347D47FD /* NotificationManager.swift in Sources */,
+				82C5528B9D4205E678519753 /* UsageData.swift in Sources */,
+				62669B97A2A31B91DDAC2D6F /* UsageManager.swift in Sources */,
+				7CFE5486D908266205C461E3 /* UsageProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		303EE899F042BD7D5DBA3910 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 2.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5;
+			};
+			name = Debug;
+		};
+		6DDB1C98234E79B4E4936017 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ClaudeMeter/AIMeter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = ClaudeMeter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francisbrero.AIMeter;
+				PRODUCT_NAME = "AI Meter";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9A71CF22C88798E165433007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = ClaudeMeter/AIMeter.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = ClaudeMeter/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.francisbrero.AIMeter;
+				PRODUCT_NAME = "AI Meter";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FF0547A3B01973150AE77363 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 2.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F3AF1FF0CFC41DD3782D5B1 /* Build configuration list for PBXNativeTarget "AIMeter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6DDB1C98234E79B4E4936017 /* Debug */,
+				9A71CF22C88798E165433007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6D9270003785FFBF5E6DA9CA /* Build configuration list for PBXProject "AIMeter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				303EE899F042BD7D5DBA3910 /* Debug */,
+				FF0547A3B01973150AE77363 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 352CF428D2FD5BDA474D3321 /* Project object */;
+}

@@ -1,6 +1,6 @@
 //
 //  UsageData.swift
-//  ClaudeMeter
+//  AIMeter
 //
 
 import Foundation
