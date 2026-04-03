@@ -47,6 +47,10 @@ class ClaudeProvider: UsageProvider {
         }
 
         if httpResponse.statusCode != 200 {
+            if httpResponse.statusCode == 429 {
+                throw ProviderError.rateLimited
+            }
+
             if let errorJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let error = errorJson["error"] as? [String: Any],
                let message = error["message"] as? String {

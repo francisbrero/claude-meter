@@ -142,6 +142,9 @@ class UsageManager: ObservableObject {
         } catch let urlError as URLError where urlError.isRetryable && retriesRemaining > 0 {
             try? await Task.sleep(nanoseconds: 3_000_000_000)
             return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
+        } catch let providerError as ProviderError where providerError.isRetryable && retriesRemaining > 0 {
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
         }
     }
 
