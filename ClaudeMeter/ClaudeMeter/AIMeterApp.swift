@@ -134,9 +134,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Get the appropriate limit based on display mode
             let limit: UsageLimit?
             if displayMode == "session" {
-                limit = usage.limits.first { $0.name.contains("5") || $0.name.contains("Session") }
+                limit = usage.limits.first { $0.name.contains("5") || $0.name.contains("Session") || $0.name.contains("Hour") }
             } else {
-                limit = usage.limits.first { $0.name.contains("Weekly") || $0.name.contains("7d") }
+                limit = usage.limits.first { $0.name.contains("Weekly") || $0.name.contains("7d") || $0.name.contains("Monthly") }
             }
 
             let percent = Int(limit?.utilization ?? usage.maxUtilization)

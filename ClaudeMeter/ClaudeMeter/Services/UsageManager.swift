@@ -201,7 +201,7 @@ class UsageManager: ObservableObject {
     var weeklyUsage: UsageData? {
         guard let claudeState = providerStates["claude"],
               let usage = claudeState.usage,
-              let limit = usage.limits.first(where: { $0.name.contains("Weekly") || $0.name.contains("7d") }) else {
+              let limit = usage.limits.first(where: { $0.name.contains("Weekly") || $0.name.contains("7d") || $0.name.contains("Monthly") }) else {
             return nil
         }
         return UsageData(utilization: limit.utilization, resetTime: limit.resetTime)

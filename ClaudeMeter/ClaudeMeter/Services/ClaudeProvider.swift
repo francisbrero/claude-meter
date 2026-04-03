@@ -72,9 +72,10 @@ class ClaudeProvider: UsageProvider {
     private func parseResponse(_ json: [String: Any]) -> ProviderUsageResponse {
         var limits: [UsageLimit] = []
 
+        // Legacy fields (may now be null for some plans)
         if let fiveHour = json["five_hour"] as? [String: Any] {
             limits.append(UsageLimit(
-                name: "Session (5h)",
+                name: "5 Hour",
                 utilization: fiveHour["utilization"] as? Double ?? 0,
                 resetTime: parseDate(fiveHour["resets_at"] as? String)
             ))
@@ -82,13 +83,22 @@ class ClaudeProvider: UsageProvider {
 
         if let sevenDay = json["seven_day"] as? [String: Any] {
             limits.append(UsageLimit(
-                name: "Weekly (7d)",
+                name: "Weekly",
                 utilization: sevenDay["utilization"] as? Double ?? 0,
                 resetTime: parseDate(sevenDay["resets_at"] as? String)
             ))
         }
 
-        if let sonnet = json["sonnet_only"] as? [String: Any] {
+        // New per-model weekly limits
+        if let opus = json["seven_day_opus"] as? [String: Any] {
+            limits.append(UsageLimit(
+                name: "Opus",
+                utilization: opus["utilization"] as? Double ?? 0,
+                resetTime: parseDate(opus["resets_at"] as? String)
+            ))
+        }
+
+        if let sonnet = json["seven_day_sonnet"] as? [String: Any] {
             limits.append(UsageLimit(
                 name: "Sonnet",
                 utilization: sonnet["utilization"] as? Double ?? 0,
@@ -96,7 +106,50 @@ class ClaudeProvider: UsageProvider {
             ))
         }
 
+        if let cowork = json["seven_day_cowork"] as? [String: Any] {
+            limits.append(UsageLimit(
+                name: "Cowork",
+                utilization: cowork["utilization"] as? Double ?? 0,
+                resetTime: parseDate(cowork["resets_at"] as? String)
+            ))
+        }
+
+        // Legacy sonnet_only field
+        if let sonnetOnly = json["sonnet_only"] as? [String: Any] {
+            limits.append(UsageLimit(
+                name: "Sonnet",
+                utilization: sonnetOnly["utilization"] as? Double ?? 0,
+                resetTime: parseDate(sonnetOnly["resets_at"] as? String)
+            ))
+        }
+
+        // Extra usage (credit-based plans)
+        if let extraUsage = json["extra_usage"] as? [String: Any],
+           let isEnabled = extraUsage["is_enabled"] as? Bool, isEnabled {
+            let utilization = extraUsage["utilization"] as? Double ?? 0
+            let usedCredits = extraUsage["used_credits"] as? Double
+            let monthlyLimit = extraUsage["monthly_limit"] as? Int
+
+            var name = "Monthly"
+            if let used = usedCredits, let limit = monthlyLimit {
+                name = "Monthly (\(formatCredits(used))/\(formatCredits(Double(limit))))"
+            }
+
+            limits.append(UsageLimit(
+                name: name,
+                utilization: utilization,
+                resetTime: nil
+            ))
+        }
+
         return ProviderUsageResponse(limits: limits)
+    }
+
+    private func formatCredits(_ value: Double) -> String {
+        if value >= 1000 {
+            return String(format: "%.1fk", value / 1000)
+        }
+        return String(format: "%.0f", value)
     }
 
     private func parseDate(_ dateString: String?) -> Date? {
