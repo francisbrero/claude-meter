@@ -133,12 +133,7 @@ struct ProviderSection: View {
                 }
             }
 
-            if let error = state.error {
-                Text(error)
-                    .font(.caption2)
-                    .foregroundColor(.red)
-                    .padding(.vertical, 2)
-            } else if let usage = state.usage {
+            if let usage = state.usage, !usage.limits.isEmpty {
                 ForEach(usage.limits, id: \.name) { limit in
                     UsageRow(
                         title: limit.name,
@@ -147,6 +142,11 @@ struct ProviderSection: View {
                         accentColor: provider.accentColor
                     )
                 }
+            } else if let error = state.error {
+                Text(error)
+                    .font(.caption2)
+                    .foregroundColor(.red)
+                    .padding(.vertical, 2)
             } else {
                 Text("Loading...")
                     .font(.caption)
