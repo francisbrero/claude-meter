@@ -124,6 +124,9 @@ class UsageManager: ObservableObject {
                             providerName: state.provider.name,
                             usage: response
                         )
+                    } else if state.usage != nil {
+                        // Keep previous data on transient errors (e.g. rate limiting)
+                        state.error = nil
                     } else {
                         state.error = error
                     }
