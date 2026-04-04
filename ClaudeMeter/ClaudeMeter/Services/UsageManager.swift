@@ -16,6 +16,7 @@ class UsageManager: ObservableObject {
     private var refreshTimer: Timer?
     private var refreshTask: Task<Void, Never>?
     private let notificationManager = NotificationManager()
+    private let cache = UsageCache()
 
     // Notification thresholds per provider
     private var notifiedThresholds: [String: Set<Int>] = [:]
@@ -70,7 +71,17 @@ class UsageManager: ObservableObject {
     init() {
         // Initialize provider states
         for provider in providers {
-            providerStates[provider.id] = ProviderState(provider: provider)
+            var state = ProviderState(provider: provider)
+            // Restore cached data so we have something to show immediately
+            if let cached = cache.load(providerId: provider.id) {
+                state.usage = cached.usage
+                state.lastUpdated = cached.date
+            }
+            providerStates[provider.id] = state
+        }
+
+        if let cachedDate = cache.lastUpdated() {
+            lastUpdated = cachedDate
         }
 
         startRefreshTimer()
@@ -103,7 +114,7 @@ class UsageManager: ObservableObject {
             for provider in availableProviders {
                 group.addTask {
                     do {
-                        let response = try await self.fetchWithRetry(provider: provider, retriesRemaining: 3)
+                        let response = try await self.fetchWithRetry(provider: provider, retriesRemaining: 2)
                         return (provider.id, response, nil)
                     } catch {
                         return (provider.id, nil, error.localizedDescription)
@@ -117,6 +128,9 @@ class UsageManager: ObservableObject {
                         state.usage = response
                         state.lastUpdated = Date()
                         state.error = nil
+
+                        // Cache to disk
+                        cache.save(providerId: providerId, usage: response)
 
                         // Check notification thresholds
                         checkThresholds(
@@ -146,7 +160,9 @@ class UsageManager: ObservableObject {
             try? await Task.sleep(nanoseconds: 3_000_000_000)
             return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
         } catch let providerError as ProviderError where providerError.isRetryable && retriesRemaining > 0 {
-            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            // Exponential backoff for rate limits: 10s, 20s
+            let delay = UInt64(10_000_000_000) * UInt64(3 - retriesRemaining)
+            try? await Task.sleep(nanoseconds: delay)
             return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
         }
     }
@@ -225,6 +241,56 @@ class UsageManager: ObservableObject {
     var error: String? {
         // Return first error from any provider
         providerStates.values.compactMap { $0.error }.first
+    }
+}
+
+// MARK: - Usage Cache
+
+/// Persists usage data to disk so it survives app restarts and rate limiting
+private class UsageCache {
+    private let cacheDir: URL = {
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let dir = appSupport.appendingPathComponent("AIMeter/Cache", isDirectory: true)
+        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir
+    }()
+
+    struct CachedUsage: Codable {
+        let limits: [CachedLimit]
+        let date: Date
+
+        struct CachedLimit: Codable {
+            let name: String
+            let utilization: Double
+            let resetTime: Date?
+        }
+    }
+
+    func save(providerId: String, usage: ProviderUsageResponse) {
+        let cached = CachedUsage(
+            limits: usage.limits.map { CachedUsage.CachedLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime) },
+            date: Date()
+        )
+        let file = cacheDir.appendingPathComponent("\(providerId).json")
+        try? JSONEncoder().encode(cached).write(to: file)
+    }
+
+    func load(providerId: String) -> (usage: ProviderUsageResponse, date: Date)? {
+        let file = cacheDir.appendingPathComponent("\(providerId).json")
+        guard let data = try? Data(contentsOf: file),
+              let cached = try? JSONDecoder().decode(CachedUsage.self, from: data) else {
+            return nil
+        }
+        // Only use cache if less than 1 hour old
+        guard Date().timeIntervalSince(cached.date) < 3600 else { return nil }
+
+        let limits = cached.limits.map { UsageLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime) }
+        return (ProviderUsageResponse(limits: limits), cached.date)
+    }
+
+    func lastUpdated() -> Date? {
+        let files = (try? FileManager.default.contentsOfDirectory(at: cacheDir, includingPropertiesForKeys: [.contentModificationDateKey])) ?? []
+        return files.compactMap { try? $0.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate }.max()
     }
 }
 

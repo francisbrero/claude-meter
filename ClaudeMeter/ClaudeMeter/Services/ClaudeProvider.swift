@@ -142,11 +142,19 @@ class ClaudeProvider: UsageProvider {
             limits.append(UsageLimit(
                 name: name,
                 utilization: utilization,
-                resetTime: nil
+                resetTime: parseDate(extraUsage["resets_at"] as? String) ?? nextMonthStart()
             ))
         }
 
         return ProviderUsageResponse(limits: limits)
+    }
+
+    private func nextMonthStart() -> Date {
+        let cal = Calendar.current
+        let now = Date()
+        let comps = cal.dateComponents([.year, .month], from: now)
+        let startOfMonth = cal.date(from: comps)!
+        return cal.date(byAdding: .month, value: 1, to: startOfMonth)!
     }
 
     private func formatCredits(_ value: Double) -> String {
