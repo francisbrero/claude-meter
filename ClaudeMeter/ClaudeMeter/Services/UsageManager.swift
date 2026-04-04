@@ -124,6 +124,9 @@ class UsageManager: ObservableObject {
                             providerName: state.provider.name,
                             usage: response
                         )
+                    } else if state.usage != nil {
+                        // Keep previous data on transient errors (e.g. rate limiting)
+                        state.error = nil
                     } else {
                         state.error = error
                     }
@@ -141,6 +144,9 @@ class UsageManager: ObservableObject {
             return try await provider.fetchUsage()
         } catch let urlError as URLError where urlError.isRetryable && retriesRemaining > 0 {
             try? await Task.sleep(nanoseconds: 3_000_000_000)
+            return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
+        } catch let providerError as ProviderError where providerError.isRetryable && retriesRemaining > 0 {
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
             return try await fetchWithRetry(provider: provider, retriesRemaining: retriesRemaining - 1)
         }
     }
@@ -201,7 +207,7 @@ class UsageManager: ObservableObject {
     var weeklyUsage: UsageData? {
         guard let claudeState = providerStates["claude"],
               let usage = claudeState.usage,
-              let limit = usage.limits.first(where: { $0.name.contains("Weekly") || $0.name.contains("7d") }) else {
+              let limit = usage.limits.first(where: { $0.name.contains("Weekly") || $0.name.contains("7d") || $0.name.contains("Monthly") }) else {
             return nil
         }
         return UsageData(utilization: limit.utilization, resetTime: limit.resetTime)

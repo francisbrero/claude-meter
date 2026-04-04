@@ -91,6 +91,7 @@ enum ProviderError: LocalizedError {
     case invalidResponse
     case apiError(statusCode: Int)
     case decodingError(String)
+    case rateLimited
 
     var errorDescription: String? {
         switch self {
@@ -109,6 +110,15 @@ enum ProviderError: LocalizedError {
             return "API error (code: \(code))"
         case .decodingError(let message):
             return "Failed to parse response: \(message)"
+        case .rateLimited:
+            return "Rate limited. Will retry shortly."
+        }
+    }
+
+    var isRetryable: Bool {
+        switch self {
+        case .rateLimited: return true
+        default: return false
         }
     }
 }
