@@ -34,8 +34,32 @@ struct UsageLimit {
     let name: String
     let utilization: Double  // 0-100
     let resetTime: Date?
+    let isUnlimited: Bool
+    let creditsUsed: Double?
+
+    init(name: String, utilization: Double, resetTime: Date?, isUnlimited: Bool = false, creditsUsed: Double? = nil) {
+        self.name = name
+        self.utilization = utilization
+        self.resetTime = resetTime
+        self.isUnlimited = isUnlimited
+        self.creditsUsed = creditsUsed
+    }
+
+    /// Dollar cost for unlimited plans (used_credits is in cents USD)
+    var dollarCost: Double? {
+        guard isUnlimited, let credits = creditsUsed else { return nil }
+        return credits / 100.0
+    }
 
     var statusColor: Color {
+        if isUnlimited, let cost = dollarCost {
+            switch cost {
+            case ..<200: return .green
+            case ..<1000: return .orange
+            case ..<2000: return .red
+            default: return .primary  // black/white depending on theme
+            }
+        }
         switch utilization {
         case ..<70: return .green
         case 70..<90: return .yellow
@@ -44,11 +68,34 @@ struct UsageLimit {
     }
 
     var statusEmoji: String {
+        if isUnlimited, let cost = dollarCost {
+            switch cost {
+            case ..<200: return "🟢"
+            case ..<1000: return "🟡"
+            case ..<2000: return "🔴"
+            default: return "⚫"
+            }
+        }
         switch utilization {
         case ..<70: return "🟢"
         case 70..<90: return "🟡"
         default: return "🔴"
         }
+    }
+
+    /// Display string for the status bar and usage row
+    var displayValue: String {
+        if isUnlimited, let cost = dollarCost {
+            return formatDollars(cost)
+        }
+        return "\(Int(utilization))%"
+    }
+
+    private func formatDollars(_ value: Double) -> String {
+        if value >= 1000 {
+            return String(format: "$%.1fk", value / 1000)
+        }
+        return String(format: "$%.0f", value)
     }
 }
 

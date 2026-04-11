@@ -131,18 +131,25 @@ class ClaudeProvider: UsageProvider {
         if let extraUsage = json["extra_usage"] as? [String: Any],
            let isEnabled = extraUsage["is_enabled"] as? Bool, isEnabled {
             let utilization = extraUsage["utilization"] as? Double ?? 0
-            let usedCredits = extraUsage["used_credits"] as? Double
+            let usedCents = extraUsage["used_credits"] as? Double
             let monthlyLimit = extraUsage["monthly_limit"] as? Int
+            let isUnlimited = monthlyLimit == nil || monthlyLimit == 0
 
             var name = "Monthly"
-            if let used = usedCredits, let limit = monthlyLimit {
-                name = "Monthly (\(formatCredits(used))/\(formatCredits(Double(limit))))"
+            if isUnlimited {
+                if let cents = usedCents {
+                    name = "Monthly (\(formatDollars(cents / 100.0)) spent)"
+                }
+            } else if let cents = usedCents, let limit = monthlyLimit {
+                name = "Monthly (\(formatDollars(cents / 100.0))/\(formatDollars(Double(limit) / 100.0)))"
             }
 
             limits.append(UsageLimit(
                 name: name,
                 utilization: utilization,
-                resetTime: parseDate(extraUsage["resets_at"] as? String) ?? nextMonthStart()
+                resetTime: parseDate(extraUsage["resets_at"] as? String) ?? nextMonthStart(),
+                isUnlimited: isUnlimited,
+                creditsUsed: usedCents
             ))
         }
 
@@ -162,6 +169,13 @@ class ClaudeProvider: UsageProvider {
             return String(format: "%.1fk", value / 1000)
         }
         return String(format: "%.0f", value)
+    }
+
+    private func formatDollars(_ value: Double) -> String {
+        if value >= 1000 {
+            return String(format: "$%.1fk", value / 1000)
+        }
+        return String(format: "$%.0f", value)
     }
 
     private func parseDate(_ dateString: String?) -> Date? {

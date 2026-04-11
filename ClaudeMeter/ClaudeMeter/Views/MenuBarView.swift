@@ -136,9 +136,7 @@ struct ProviderSection: View {
             if let usage = state.usage, !usage.limits.isEmpty {
                 ForEach(usage.limits, id: \.name) { limit in
                     UsageRow(
-                        title: limit.name,
-                        utilization: limit.utilization,
-                        resetTime: limit.resetTime,
+                        limit: limit,
                         accentColor: provider.accentColor
                     )
                 }
@@ -160,44 +158,36 @@ struct ProviderSection: View {
 // MARK: - Usage Row
 
 struct UsageRow: View {
-    let title: String
-    let utilization: Double
-    let resetTime: Date?
+    let limit: UsageLimit
     var accentColor: Color = .blue
-
-    var statusColor: Color {
-        switch utilization {
-        case ..<70: return .green
-        case 70..<90: return .yellow
-        default: return .red
-        }
-    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(title)
+                Text(limit.name)
                     .font(.system(size: 12))
                 Spacer()
-                Text("\(Int(utilization))%")
+                Text(limit.displayValue)
                     .font(.system(size: 12, weight: .semibold, design: .monospaced))
-                    .foregroundColor(statusColor)
+                    .foregroundColor(limit.statusColor)
             }
 
-            // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.secondary.opacity(0.15))
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(statusColor)
-                        .frame(width: geometry.size.width * min(CGFloat(utilization) / 100, 1.0))
+            if !limit.isUnlimited {
+                // Progress bar (hidden for unlimited)
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.secondary.opacity(0.15))
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(limit.statusColor)
+                            .frame(width: geometry.size.width * min(CGFloat(limit.utilization) / 100, 1.0))
+                    }
                 }
+                .frame(height: 6)
             }
-            .frame(height: 6)
 
             // Reset time
-            if let resetTime = resetTime {
+            if let resetTime = limit.resetTime {
                 Text("Resets \(formatTimeRemaining(resetTime))")
                     .font(.system(size: 10))
                     .foregroundColor(.secondary)
