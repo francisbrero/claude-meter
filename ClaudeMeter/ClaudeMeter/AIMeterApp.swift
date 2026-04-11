@@ -139,13 +139,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 limit = usage.limits.first { $0.name.contains("Weekly") || $0.name.contains("7d") || $0.name.contains("Monthly") }
             }
 
-            let percent = Int(limit?.utilization ?? usage.maxUtilization)
-            let color: NSColor = percent >= 90 ? .systemRed
-                                : percent >= 70 ? .systemOrange
-                                : .systemGreen
+            let displayText: String
+            let color: NSColor
+            if let lim = limit, lim.isUnlimited, let cost = lim.dollarCost {
+                displayText = lim.displayValue
+                switch cost {
+                case ..<200: color = .systemGreen
+                case ..<1000: color = .systemOrange
+                case ..<2000: color = .systemRed
+                default: color = .labelColor
+                }
+            } else {
+                let percent = Int(limit?.utilization ?? usage.maxUtilization)
+                displayText = "\(percent)%"
+                color = percent >= 90 ? .systemRed
+                       : percent >= 70 ? .systemOrange
+                       : .systemGreen
+            }
 
             let percentStr = NSAttributedString(
-                string: "\(percent)%",
+                string: displayText,
                 attributes: [.foregroundColor: color, .font: font]
             )
             attributedString.append(percentStr)

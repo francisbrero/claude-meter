@@ -263,12 +263,14 @@ private class UsageCache {
             let name: String
             let utilization: Double
             let resetTime: Date?
+            let isUnlimited: Bool?
+            let creditsUsed: Double?
         }
     }
 
     func save(providerId: String, usage: ProviderUsageResponse) {
         let cached = CachedUsage(
-            limits: usage.limits.map { CachedUsage.CachedLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime) },
+            limits: usage.limits.map { CachedUsage.CachedLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime, isUnlimited: $0.isUnlimited, creditsUsed: $0.creditsUsed) },
             date: Date()
         )
         let file = cacheDir.appendingPathComponent("\(providerId).json")
@@ -284,7 +286,7 @@ private class UsageCache {
         // Only use cache if less than 1 hour old
         guard Date().timeIntervalSince(cached.date) < 3600 else { return nil }
 
-        let limits = cached.limits.map { UsageLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime) }
+        let limits = cached.limits.map { UsageLimit(name: $0.name, utilization: $0.utilization, resetTime: $0.resetTime, isUnlimited: $0.isUnlimited ?? false, creditsUsed: $0.creditsUsed) }
         return (ProviderUsageResponse(limits: limits), cached.date)
     }
 
